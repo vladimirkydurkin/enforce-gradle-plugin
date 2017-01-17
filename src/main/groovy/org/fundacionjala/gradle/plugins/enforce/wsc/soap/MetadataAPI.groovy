@@ -12,6 +12,8 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.ForceAPI
 import org.fundacionjala.gradle.plugins.enforce.wsc.InspectorResults
 
+import org.gradle.api.Project
+
 /**
  * This class wraps Metadata Api and exposes WSDL methods
  */
@@ -24,6 +26,7 @@ class MetadataAPI extends ForceAPI {
     private final String STARTING_RETRIEVE = "Starting retrieve..."
     private final String WAITING_RETRIEVE = 'Waiting for retrieve result...'
     private final String RETRIEVE_COMPLETED = 'Retrieve result completed'
+    private Project project;
     MetadataConnection metadataConnection
     InspectorResults inspectorResults
     int poll = 200
@@ -41,9 +44,10 @@ class MetadataAPI extends ForceAPI {
      * Constructs an api connection from the user credential and connector
      * @param credential
      */
-    MetadataAPI(Credential credential, org.fundacionjala.gradle.plugins.enforce.wsc.Connector connector) {
+    MetadataAPI(Credential credential, org.fundacionjala.gradle.plugins.enforce.wsc.Connector connector, Project project) {
         super(credential, connector)
         inspectorResults = new InspectorResults(metadataConnection, System.out)
+        this.project = project
     }
 
     /**
@@ -99,12 +103,14 @@ class MetadataAPI extends ForceAPI {
     private DeployResult genericDeploy(String sourcePath, boolean checkOnly) {
         def byteArray = new File(sourcePath).getBytes()
         DeployOptions deployOptions = new DeployOptions()
+        MetadataAPIParams apiParams = new MetadataAPIParams(project);
+
         deployOptions.setPerformRetrieve(false)
-        deployOptions.setRollbackOnError(true)
-        deployOptions.setSinglePackage(true)
-        deployOptions.setAllowMissingFiles(true)
-        deployOptions.setPurgeOnDelete(true)
-        deployOptions.setIgnoreWarnings(false)
+        deployOptions.setRollbackOnError(apiParams.RollbackOnError)
+        deployOptions.setSinglePackage(apiParams.SinglePackage)
+        deployOptions.setAllowMissingFiles(apiParams.AllowMissingFiles)
+        deployOptions.setPurgeOnDelete(apiParams.PurgeOnDelete)
+        deployOptions.setIgnoreWarnings(apiParams.IgnoreWarnings)
         deployOptions.setCheckOnly(checkOnly)
         AsyncResult asyncResult = metadataConnection.deploy(byteArray, deployOptions)
         DeployResult deployResult = inspectorResults.waitForDeployResult(asyncResult.id, poll, waitTime * THOUSAND)

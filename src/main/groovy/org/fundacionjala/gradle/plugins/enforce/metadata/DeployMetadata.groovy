@@ -10,6 +10,8 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.soap.MetadataAPI
 
+import org.gradle.api.Project
+
 /**
  * Deploys an org using metadata API
  */
@@ -35,8 +37,8 @@ class DeployMetadata {
     /**
      * Deploys an org using metadata API in the source path specified
      */
-    void deploy(int poll, int waitTime, Credential credential, String apiVersion, boolean checkOnly) {
-        MetadataAPI metadataAPI = new MetadataAPI(credential, new Connector(credential.loginFormat, apiVersion))
+    void deploy(int poll, int waitTime, Credential credential, String apiVersion, boolean checkOnly, Project project) {
+        MetadataAPI metadataAPI = new MetadataAPI(credential, new Connector(credential.loginFormat, apiVersion), project)
         metadataAPI.poll = poll
         metadataAPI.waitTime = waitTime
         println startMessage
