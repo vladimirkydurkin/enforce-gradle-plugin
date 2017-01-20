@@ -43,7 +43,7 @@ class MetadataApiTest extends Specification {
         loginResult.getUserInfo() >> userInfoResult
         credential = new Credential(username: 'jperez@gradle.com', password: 'myPassword', token: 'gma96VK1pgmr',
                 loginFormat: LoginType.DEV)
-        def apiVersion = '31.0'
+        def apiVersion = '39.0'
         connector = Spy(Connector, constructorArgs: [LoginType.DEV.value(), apiVersion])
 
         partnerMock.login(credential.username, credential.getPasswordToken()) >> loginResult
